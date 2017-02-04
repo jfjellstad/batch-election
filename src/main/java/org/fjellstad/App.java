@@ -1,11 +1,10 @@
 package org.fjellstad;
 
 import org.fjellstad.config.AppConfig;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.SpringApplication;
 
 public class App {
     public static void main( String[] args ) {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
-        System.out.println( "Hello World!" );
+        SpringApplication.run(AppConfig.class, args);
     }
 }
