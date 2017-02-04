@@ -3,3 +3,4 @@ create table BATCH (
     SCHEDULE timestamp not null
 );
 
+alter table BATCH add constraint BA_PK primary key (NAME, SCHEDULE);
