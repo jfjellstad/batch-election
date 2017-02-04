@@ -31,7 +31,7 @@ public class AppConfig {
 
     private final String dbUrl;
     private final String dbUsername;
-    private final String dbPassword = "";
+    private final String dbPassword;
 
     @Inject
     public AppConfig(@Value("${db.url}") String dbUrl,
@@ -39,6 +39,7 @@ public class AppConfig {
                      @Value("${db.password}") String dbPassword) {
         this.dbUrl = dbUrl;
         this.dbUsername = dbUsername;
+        this.dbPassword = dbPassword;
     }
 
     @Bean(destroyMethod = "close")
@@ -66,13 +67,6 @@ public class AppConfig {
 
     @Bean(destroyMethod = "stop")
     public Server server() throws SQLException {
-        return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "7001", "-baseDir", "../").start();
+        return Server.createTcpServer("-web", "-tcpAllowOthers", "-tcpPort", "7001", "-baseDir", "../foo").start();
     }
 }
-//<bean id = "org.h2.tools.Server"
-//            class="org.h2.tools.Server"
-//            factory-method="createTcpServer"
-//            init-method="start"
-//            destroy-method="stop">
-//    <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,8043" />
-//</bean>
