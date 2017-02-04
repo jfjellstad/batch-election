@@ -10,14 +10,16 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Objects;
 
 public abstract class AbstractJob extends QuartzJobBean {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String jobName = getClass().getSimpleName();
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BatchService batchService;
 
     public AbstractJob(BatchService batchService) {
+        Objects.requireNonNull(batchService, "batchService cannot be null");
         this.batchService = batchService;
     }
 
@@ -41,6 +43,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 
     protected abstract void onExecuteInternal(JobExecutionContext context) throws JobExecutionException;
 
+    @SuppressWarnings("WeakerAccess")
     protected void onLostElection(JobExecutionContext context) {
     }
 }
