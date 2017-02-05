@@ -3,11 +3,13 @@ package org.fjellstad;
 import org.h2.tools.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class AppServer implements CommandLineRunner {
@@ -25,11 +27,18 @@ public class AppServer implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		if (applicationArguments.getNonOptionArgs().contains("server")) {
-			logger.info("Starting server {}", server.getURL());
+		if (applicationArguments.containsOption("server")) {
+			MDC.put("node", "server");
+			logger.info("Starting server at {}", server.getURL());
 			server.start();
-		} else {
-			logger.info("Starting node{}", nodeId);
+		} else if (applicationArguments.containsOption("node")) {
+			List<String> options = applicationArguments.getOptionValues("node");
+			String node = "node" + nodeId;
+			if (!options.isEmpty()) {
+				node = "node" + options.get(0);
+			}
+			MDC.put("node", node);
+			logger.info("Starting {}", node);
 		}
 	}
 }

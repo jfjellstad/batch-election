@@ -18,11 +18,6 @@ public abstract class AbstractJob extends QuartzJobBean {
 
     private BatchService batchService;
 
-    public AbstractJob(BatchService batchService) {
-        Objects.requireNonNull(batchService, "batchService cannot be null");
-        this.batchService = batchService;
-    }
-
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         if (!jobLock(context)) {
             onLostElection(context);
@@ -45,5 +40,14 @@ public abstract class AbstractJob extends QuartzJobBean {
 
     @SuppressWarnings("WeakerAccess")
     protected void onLostElection(JobExecutionContext context) {
+    }
+
+	/**
+	 * Used by Quartz scheduler to set service
+	 */
+	@SuppressWarnings("unused")
+    public void setBatchService(BatchService batchService) {
+        Objects.requireNonNull(batchService, "batchService cannot be null");
+        this.batchService = batchService;
     }
 }
