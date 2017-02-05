@@ -1,5 +1,7 @@
 package org.fjellstad.job;
 
+import org.fjellstad.model.BatchJob;
+import org.fjellstad.model.JobStatus;
 import org.fjellstad.service.BatchService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -24,26 +26,43 @@ public abstract class AbstractJob extends QuartzJobBean {
 			onLostElection(context);
 			return;
 		}
+		ZonedDateTime scheduledTime = ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
+		                                                      ZoneOffset.systemDefault());
 		try {
 			onExecuteInternal(context);
+			batchService.updateJob(jobName, scheduledTime, JobStatus.FINISHED);
 		} catch (Exception ex) {
-			logger.error("Job failed at {}", ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
-			                                                         ZoneOffset.systemDefault()));
+			logger.error("Job failed at {}", scheduledTime);
+			batchService.updateJob(jobName, scheduledTime, JobStatus.FAILED);
 		}
 	}
 
 	private boolean jobLock(JobExecutionContext context) {
 		try {
 			Date scheduled = context.getScheduledFireTime();
-			batchService.createJob(jobName, scheduled.toInstant().atZone(ZoneOffset.systemDefault()));
+			batchService.createJob(jobName, scheduled.toInstant().atZone(ZoneOffset.systemDefault()).withNano(0));
 			return true;
 		} catch (DuplicateKeyException ignore) {
-			return false;
+			return checkJobLock(context);
 		}
+	}
+
+	private boolean checkJobLock(JobExecutionContext context) {
+		ZonedDateTime scheduled = ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
+		                                                  ZoneOffset.systemDefault()).withNano(0);
+		BatchJob lastJob = batchService.getLastRunJob(jobName);
+		if (lastJob.getStatus() != JobStatus.RUNNING && scheduled.isEqual(lastJob.getSchedule())) {
+			batchService.updateJob(jobName, scheduled, JobStatus.RUNNING);
+			return true;
+		}
+		return false;
 	}
 
 	protected abstract void onExecuteInternal(JobExecutionContext context) throws JobExecutionException;
 
+	/**
+	 *  Overloaded by subclasses if they need it
+	 */
 	@SuppressWarnings("WeakerAccess")
 	protected void onLostElection(JobExecutionContext context) {
 	}

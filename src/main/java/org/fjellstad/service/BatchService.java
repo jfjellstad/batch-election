@@ -1,11 +1,12 @@
 package org.fjellstad.service;
 
+import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
 
 import java.time.ZonedDateTime;
 
 public interface BatchService {
-    ZonedDateTime getLastRunJob(String jobb);
+    BatchJob getLastRunJob(String jobb);
 
     int createJob(String job, ZonedDateTime timestamp);
 

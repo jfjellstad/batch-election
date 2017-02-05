@@ -1,5 +1,6 @@
 package org.fjellstad.service;
 
+import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
 import org.fjellstad.repository.BatchMapper;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class BatchServiceImpl implements BatchService {
 
 
     @Override
-    public ZonedDateTime getLastRunJob(String jobb) {
+    public BatchJob getLastRunJob(String jobb) {
         return mapper.getLastJob(jobb);
     }
 

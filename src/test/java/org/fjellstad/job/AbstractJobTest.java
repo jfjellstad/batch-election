@@ -1,5 +1,7 @@
 package org.fjellstad.job;
 
+import org.fjellstad.model.BatchJob;
+import org.fjellstad.model.JobStatus;
 import org.fjellstad.service.BatchService;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +16,7 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AbstractJobTest {
@@ -40,17 +42,26 @@ public class AbstractJobTest {
 		fakeJob.withFlag(true).withMessage("should run");
 
 		fakeJob.executeInternal(jobContext);
+
+		verify(batchService, times(1)).createJob(anyString(), any(ZonedDateTime.class));
 	}
 
 	@Test
-	public void testThrow() throws Exception {
+	public void whenAnotherJobRunningThrowDuplicateKeyException() throws Exception {
 		fakeJob.withFlag(false).withMessage("should not run");
 
 		when(batchService.createJob(anyString(), any(ZonedDateTime.class))).thenThrow(new DuplicateKeyException("Duplicate Key"));
+		BatchJob job = mock(BatchJob.class);
+		when(batchService.getLastRunJob(anyString())).thenReturn(job);
+		when(job.getStatus()).thenReturn(JobStatus.RUNNING);
 
 		fakeJob.executeInternal(jobContext);
 
 		assertThat(true).isTrue();
+
+		verify(batchService, times(1)).createJob(anyString(), any(ZonedDateTime.class));
+		verify(batchService).getLastRunJob(anyString());
+		verify(batchService, never()).updateJob(anyString(), any(ZonedDateTime.class), any(JobStatus.class));
 	}
 
 	public static class FakeJob extends AbstractJob {
