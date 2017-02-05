@@ -2,6 +2,7 @@ package org.fjellstad.service;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.fjellstad.config.AppConfig;
+import org.fjellstad.model.JobStatus;
 import org.fjellstad.repository.BatchMapper;
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
@@ -68,6 +69,15 @@ public class BatchServiceTest {
         ZonedDateTime result = batchService.getLastRunJob(BatchServiceTest.class.getSimpleName());
         logger.info("Timestamp retrieved: {}", result);
         assertThat(result.getDayOfWeek()).isEqualTo(ZonedDateTime.now().getDayOfWeek());
+    }
+
+    @Test
+    public void updateJobStatus() {
+        ZonedDateTime timestamp = ZonedDateTime.now();
+        batchService.createJob(BatchServiceTest.class.getSimpleName(), timestamp);
+        int resultat = batchService.updateJob(BatchServiceTest.class.getSimpleName(), timestamp, JobStatus.FINISHED);
+
+        assertThat(resultat).isEqualTo(1);
     }
 
 }

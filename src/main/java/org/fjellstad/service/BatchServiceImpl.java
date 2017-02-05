@@ -38,6 +38,6 @@ public class BatchServiceImpl implements BatchService {
     @Override
     @Transactional
     public int updateJob(String job, ZonedDateTime timestamp, JobStatus status) {
-        return 0;
+        return mapper.updateJob(job, timestamp, status);
     }
 }
