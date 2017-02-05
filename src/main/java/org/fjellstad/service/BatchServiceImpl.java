@@ -1,5 +1,6 @@
 package org.fjellstad.service;
 
+import org.fjellstad.model.JobStatus;
 import org.fjellstad.repository.BatchMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,17 +25,19 @@ public class BatchServiceImpl implements BatchService {
 
     @Override
     @Transactional
-    public int createJob(String job, ZonedDateTime tidspunkt) {
-        return mapper.createJob(job, tidspunkt);
+    public int createJob(String job, ZonedDateTime timestamp) {
+        return mapper.createJob(job, timestamp, JobStatus.RUNNING);
     }
 
     @Override
+    @Transactional
     public int deleteJob(String job) {
         return 0;
     }
 
     @Override
-    public int updateJob(String job, ZonedDateTime tidspunkt) {
+    @Transactional
+    public int updateJob(String job, ZonedDateTime timestamp, JobStatus status) {
         return 0;
     }
 }
