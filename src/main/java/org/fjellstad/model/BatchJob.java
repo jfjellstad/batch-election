@@ -1,22 +1,24 @@
 package org.fjellstad.model;
 
+import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class BatchJob {
-	private String name;
-	private ZonedDateTime schedule;
-	private JobStatus status;
+	private final String name;
+	private final ZonedDateTime schedule;
+	private final JobStatus status;
 
-	public void setName(String name) {
+	public BatchJob(String name, ZonedDateTime schedule, JobStatus status) {
 		this.name = name;
-	}
-
-	public void setSchedule(ZonedDateTime schedule) {
 		this.schedule = schedule;
+		this.status = status;
 	}
 
-	public void setStatus(JobStatus status) {
-		this.status = status;
+	public BatchJob(String name, Timestamp schedule, String status) {
+		this.name = name;
+		this.schedule = ZonedDateTime.ofInstant(schedule.toInstant(), ZoneId.systemDefault());
+		this.status = JobStatus.toJobStatus(status);
 	}
 
 	public String getName() {

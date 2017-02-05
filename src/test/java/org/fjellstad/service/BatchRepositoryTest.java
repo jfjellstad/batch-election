@@ -1,17 +1,14 @@
 package org.fjellstad.service;
 
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.fjellstad.config.AppConfig;
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.fjellstad.repository.BatchMapper;
 import org.fjellstad.repository.BatchRepository;
-import org.fjellstad.repository.BatchRepositoryMyBatis;
+import org.fjellstad.repository.BatchRepositoryDAO;
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         @ContextConfiguration(
                 classes = {
                         AppConfig.class,
-                        TestAppConfig.class
+                        TestAppConfig.class,
+								  BatchRepositoryDAO.class
                 }
         )
 })
@@ -39,11 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BatchRepositoryTest {
     private final Logger logger = LoggerFactory.getLogger(BatchRepositoryTest.class);
 
-    @Inject
-    private SqlSessionFactory sessionFactory;
 	@Inject
 	private DataSource dataSource;
 
+	@Inject
     private BatchRepository batchRepository;
 
     @PostConstruct
@@ -55,8 +52,6 @@ public class BatchRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        SqlSessionTemplate sessionTemplate = new SqlSessionTemplate(sessionFactory);
-        batchRepository = new BatchRepositoryMyBatis(sessionTemplate.getMapper(BatchMapper.class));
     }
 
     @Test

@@ -1,10 +1,7 @@
 package org.fjellstad.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.h2.tools.Server;
-import org.mybatis.spring.SqlSessionFactoryBean;
-import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +20,6 @@ import java.sql.SQLException;
 @Configuration
 @EnableScheduling
 @ComponentScan(basePackages = "org.fjellstad")
-@MapperScan("org.fjellstad.repository")
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
 public class AppConfig {
@@ -56,13 +52,6 @@ public class AppConfig {
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
-    }
-
-    @Bean
-    public SqlSessionFactory sqlSessionFactory() throws Exception {
-        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-        bean.setDataSource(dataSource());
-        return bean.getObject();
     }
 
     @Bean(destroyMethod = "stop")
