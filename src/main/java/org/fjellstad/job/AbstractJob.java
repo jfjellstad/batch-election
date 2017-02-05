@@ -51,7 +51,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 		ZonedDateTime scheduled = ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
 		                                                  ZoneOffset.systemDefault()).withNano(0);
 		BatchJob lastJob = batchRepository.getLastRunJob(jobName);
-		if (lastJob.getStatus() != JobStatus.RUNNING && scheduled.isEqual(lastJob.getSchedule())) {
+		if (lastJob.getStatus() == JobStatus.FAILED && scheduled.isEqual(lastJob.getSchedule())) {
 			batchRepository.updateJob(jobName, scheduled, JobStatus.RUNNING);
 			return true;
 		}

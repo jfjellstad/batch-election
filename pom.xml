@@ -35,7 +35,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>${flyway.version}</version>
                 <configuration>
-                    <url>jdbc:h2:http://localhost:7001/batch;MODE=Oracle</url>
+                    <url>jdbc:h2:tcp://localhost:7001/batch;MODE=Oracle</url>
                     <user>sa</user>
                 </configuration>
                 <dependencies>
@@ -206,7 +206,6 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>${flyway.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
