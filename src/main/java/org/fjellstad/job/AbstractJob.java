@@ -26,7 +26,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 		}
 		try {
 			onExecuteInternal(context);
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			logger.error("Job failed at {}", ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
 			                                                         ZoneOffset.systemDefault()));
 		}
