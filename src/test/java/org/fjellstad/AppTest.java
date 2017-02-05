@@ -2,6 +2,7 @@ package org.fjellstad;
 
 
 import org.fjellstad.config.AppConfig;
+import org.fjellstad.service.TestAppConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,7 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
         @ContextConfiguration(
-                classes = AppConfig.class
+                classes = {
+                		AppConfig.class, TestAppConfig.class
+                }
         )
 })
 public class AppTest {

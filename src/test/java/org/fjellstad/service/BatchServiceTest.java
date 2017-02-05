@@ -3,6 +3,7 @@ package org.fjellstad.service;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.fjellstad.config.AppConfig;
 import org.fjellstad.repository.BatchMapper;
+import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,9 @@ import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +37,17 @@ public class BatchServiceTest {
 
     @Inject
     private SqlSessionFactory sessionFactory;
+	@Inject
+	private DataSource dataSource;
 
     private BatchService batchService;
+
+    @PostConstruct
+    public void initSetup() throws Exception {
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.migrate();
+    }
 
     @Before
     public void setUp() throws Exception {

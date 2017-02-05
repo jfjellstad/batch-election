@@ -67,6 +67,6 @@ public class AppConfig {
 
     @Bean(destroyMethod = "stop")
     public Server server() throws SQLException {
-        return Server.createTcpServer("-web", "-tcpAllowOthers", "-tcpPort", "7001", "-baseDir", "../foo").start();
+        return Server.createWebServer("-webAllowOthers", "-webPort", "7001", "-baseDir", "./target");
     }
 }
