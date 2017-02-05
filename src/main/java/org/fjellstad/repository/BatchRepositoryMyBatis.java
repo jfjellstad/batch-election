@@ -2,18 +2,18 @@ package org.fjellstad.repository;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.ZonedDateTime;
 
-@Service
-public class BatchServiceImpl implements BatchService {
+@Repository
+public class BatchRepositoryMyBatis implements BatchRepository {
     private BatchMapper mapper;
 
     @Inject
-    public BatchServiceImpl(BatchMapper mapper) {
+    public BatchRepositoryMyBatis(BatchMapper mapper) {
         this.mapper = mapper;
     }
 

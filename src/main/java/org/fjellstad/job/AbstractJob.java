@@ -2,7 +2,7 @@ package org.fjellstad.job;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.fjellstad.repository.BatchService;
+import org.fjellstad.repository.BatchRepository;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 	private final String jobName = getClass().getSimpleName();
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private BatchService batchService;
+	private BatchRepository batchRepository;
 
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		if (!jobLock(context)) {
@@ -30,17 +30,17 @@ public abstract class AbstractJob extends QuartzJobBean {
 		                                                      ZoneOffset.systemDefault());
 		try {
 			onExecuteInternal(context);
-			batchService.updateJob(jobName, scheduledTime, JobStatus.FINISHED);
+			batchRepository.updateJob(jobName, scheduledTime, JobStatus.FINISHED);
 		} catch (Exception ex) {
 			logger.error("Job failed at {}", scheduledTime);
-			batchService.updateJob(jobName, scheduledTime, JobStatus.FAILED);
+			batchRepository.updateJob(jobName, scheduledTime, JobStatus.FAILED);
 		}
 	}
 
 	private boolean jobLock(JobExecutionContext context) {
 		try {
 			Date scheduled = context.getScheduledFireTime();
-			batchService.createJob(jobName, scheduled.toInstant().atZone(ZoneOffset.systemDefault()).withNano(0));
+			batchRepository.createJob(jobName, scheduled.toInstant().atZone(ZoneOffset.systemDefault()).withNano(0));
 			return true;
 		} catch (DuplicateKeyException ignore) {
 			return checkJobLock(context);
@@ -50,9 +50,9 @@ public abstract class AbstractJob extends QuartzJobBean {
 	private boolean checkJobLock(JobExecutionContext context) {
 		ZonedDateTime scheduled = ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
 		                                                  ZoneOffset.systemDefault()).withNano(0);
-		BatchJob lastJob = batchService.getLastRunJob(jobName);
+		BatchJob lastJob = batchRepository.getLastRunJob(jobName);
 		if (lastJob.getStatus() != JobStatus.RUNNING && scheduled.isEqual(lastJob.getSchedule())) {
-			batchService.updateJob(jobName, scheduled, JobStatus.RUNNING);
+			batchRepository.updateJob(jobName, scheduled, JobStatus.RUNNING);
 			return true;
 		}
 		return false;
@@ -71,8 +71,8 @@ public abstract class AbstractJob extends QuartzJobBean {
 	 * Used by Quartz scheduler to set service
 	 */
 	@SuppressWarnings("unused")
-	public void setBatchService(BatchService batchService) {
-		Objects.requireNonNull(batchService, "batchService cannot be null");
-		this.batchService = batchService;
+	public void setBatchRepository(BatchRepository batchRepository) {
+		Objects.requireNonNull(batchRepository, "batchRepository cannot be null");
+		this.batchRepository = batchRepository;
 	}
 }

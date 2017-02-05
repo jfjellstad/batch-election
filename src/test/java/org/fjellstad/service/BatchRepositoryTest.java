@@ -5,8 +5,8 @@ import org.fjellstad.config.AppConfig;
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
 import org.fjellstad.repository.BatchMapper;
-import org.fjellstad.repository.BatchService;
-import org.fjellstad.repository.BatchServiceImpl;
+import org.fjellstad.repository.BatchRepository;
+import org.fjellstad.repository.BatchRepositoryMyBatis;
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,15 +36,15 @@ import static org.assertj.core.api.Assertions.assertThat;
         )
 })
 @Transactional
-public class BatchServiceTest {
-    private final Logger logger = LoggerFactory.getLogger(BatchServiceTest.class);
+public class BatchRepositoryTest {
+    private final Logger logger = LoggerFactory.getLogger(BatchRepositoryTest.class);
 
     @Inject
     private SqlSessionFactory sessionFactory;
 	@Inject
 	private DataSource dataSource;
 
-    private BatchService batchService;
+    private BatchRepository batchRepository;
 
     @PostConstruct
     public void initSetup() throws Exception {
@@ -56,20 +56,20 @@ public class BatchServiceTest {
     @Before
     public void setUp() throws Exception {
         SqlSessionTemplate sessionTemplate = new SqlSessionTemplate(sessionFactory);
-        batchService = new BatchServiceImpl(sessionTemplate.getMapper(BatchMapper.class));
+        batchRepository = new BatchRepositoryMyBatis(sessionTemplate.getMapper(BatchMapper.class));
     }
 
     @Test
     public void insertRowInDB() {
-        int result = batchService.createJob(BatchServiceTest.class.getSimpleName(), ZonedDateTime.now());
+        int result = batchRepository.createJob(BatchRepositoryTest.class.getSimpleName(), ZonedDateTime.now());
         assertThat(result).isEqualTo(1);
     }
 
     @Test
     public void selectRetrieveLatestJob() {
-        batchService.createJob(BatchServiceTest.class.getSimpleName(), ZonedDateTime.now().minusDays(1));
-        batchService.createJob(BatchServiceTest.class.getSimpleName(), ZonedDateTime.now());
-        BatchJob result = batchService.getLastRunJob(BatchServiceTest.class.getSimpleName());
+        batchRepository.createJob(BatchRepositoryTest.class.getSimpleName(), ZonedDateTime.now().minusDays(1));
+        batchRepository.createJob(BatchRepositoryTest.class.getSimpleName(), ZonedDateTime.now());
+        BatchJob result = batchRepository.getLastRunJob(BatchRepositoryTest.class.getSimpleName());
         logger.info("Timestamp retrieved: {}", result.getSchedule());
         assertThat(result.getSchedule().getDayOfWeek()).isEqualTo(ZonedDateTime.now().getDayOfWeek());
     }
@@ -77,8 +77,8 @@ public class BatchServiceTest {
     @Test
     public void updateJobStatus() {
         ZonedDateTime timestamp = ZonedDateTime.now();
-        batchService.createJob(BatchServiceTest.class.getSimpleName(), timestamp);
-        int resultat = batchService.updateJob(BatchServiceTest.class.getSimpleName(), timestamp, JobStatus.FINISHED);
+        batchRepository.createJob(BatchRepositoryTest.class.getSimpleName(), timestamp);
+        int resultat = batchRepository.updateJob(BatchRepositoryTest.class.getSimpleName(), timestamp, JobStatus.FINISHED);
 
         assertThat(resultat).isEqualTo(1);
     }

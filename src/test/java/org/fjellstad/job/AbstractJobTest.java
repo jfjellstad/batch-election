@@ -2,7 +2,7 @@ package org.fjellstad.job;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.fjellstad.repository.BatchService;
+import org.fjellstad.repository.BatchRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -24,7 +24,7 @@ public class AbstractJobTest {
 	@Mock
 	private JobExecutionContext jobContext;
 	@Mock
-	private BatchService batchService;
+	private BatchRepository batchRepository;
 	private FakeJob fakeJob;
 
 	@Before
@@ -32,7 +32,7 @@ public class AbstractJobTest {
 		initMocks(this);
 
 		fakeJob = new FakeJob();
-		fakeJob.setBatchService(batchService);
+		fakeJob.setBatchRepository(batchRepository);
 
 		when(jobContext.getScheduledFireTime()).thenReturn(new Date());
 	}
@@ -43,25 +43,25 @@ public class AbstractJobTest {
 
 		fakeJob.executeInternal(jobContext);
 
-		verify(batchService, times(1)).createJob(anyString(), any(ZonedDateTime.class));
+		verify(batchRepository, times(1)).createJob(anyString(), any(ZonedDateTime.class));
 	}
 
 	@Test
 	public void whenAnotherJobRunningThrowDuplicateKeyException() throws Exception {
 		fakeJob.withFlag(false).withMessage("should not run");
 
-		when(batchService.createJob(anyString(), any(ZonedDateTime.class))).thenThrow(new DuplicateKeyException("Duplicate Key"));
+		when(batchRepository.createJob(anyString(), any(ZonedDateTime.class))).thenThrow(new DuplicateKeyException("Duplicate Key"));
 		BatchJob job = mock(BatchJob.class);
-		when(batchService.getLastRunJob(anyString())).thenReturn(job);
+		when(batchRepository.getLastRunJob(anyString())).thenReturn(job);
 		when(job.getStatus()).thenReturn(JobStatus.RUNNING);
 
 		fakeJob.executeInternal(jobContext);
 
 		assertThat(true).isTrue();
 
-		verify(batchService, times(1)).createJob(anyString(), any(ZonedDateTime.class));
-		verify(batchService).getLastRunJob(anyString());
-		verify(batchService, never()).updateJob(anyString(), any(ZonedDateTime.class), any(JobStatus.class));
+		verify(batchRepository, times(1)).createJob(anyString(), any(ZonedDateTime.class));
+		verify(batchRepository).getLastRunJob(anyString());
+		verify(batchRepository, never()).updateJob(anyString(), any(ZonedDateTime.class), any(JobStatus.class));
 	}
 
 	public static class FakeJob extends AbstractJob {

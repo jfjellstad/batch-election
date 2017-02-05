@@ -5,7 +5,7 @@ import org.fjellstad.model.JobStatus;
 
 import java.time.ZonedDateTime;
 
-public interface BatchService {
+public interface BatchRepository {
     BatchJob getLastRunJob(String jobb);
 
     int createJob(String job, ZonedDateTime timestamp);
