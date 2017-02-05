@@ -2,7 +2,7 @@ package org.fjellstad.job;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.fjellstad.service.BatchService;
+import org.fjellstad.repository.BatchService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;

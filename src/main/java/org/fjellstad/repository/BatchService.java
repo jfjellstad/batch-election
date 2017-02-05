@@ -1,4 +1,4 @@
-package org.fjellstad.service;
+package org.fjellstad.repository;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;

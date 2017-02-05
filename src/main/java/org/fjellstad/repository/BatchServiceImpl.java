@@ -1,8 +1,7 @@
-package org.fjellstad.service;
+package org.fjellstad.repository;
 
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
-import org.fjellstad.repository.BatchMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

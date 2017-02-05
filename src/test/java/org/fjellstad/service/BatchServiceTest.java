@@ -5,6 +5,8 @@ import org.fjellstad.config.AppConfig;
 import org.fjellstad.model.BatchJob;
 import org.fjellstad.model.JobStatus;
 import org.fjellstad.repository.BatchMapper;
+import org.fjellstad.repository.BatchService;
+import org.fjellstad.repository.BatchServiceImpl;
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
 import org.junit.Test;
