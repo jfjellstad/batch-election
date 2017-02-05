@@ -52,6 +52,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 		                                                  ZoneOffset.systemDefault()).withNano(0);
 		BatchJob lastJob = batchRepository.getLastRunJob(jobName);
 		if (lastJob.getStatus() == JobStatus.FAILED && scheduled.isEqual(lastJob.getSchedule())) {
+			logger.info("Restarting failed job {}", jobName);
 			batchRepository.updateJob(jobName, scheduled, JobStatus.RUNNING);
 			return true;
 		}
