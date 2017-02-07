@@ -43,7 +43,7 @@ public abstract class AbstractJob extends QuartzJobBean {
 			batchRepository.createJob(jobName, scheduled.toInstant().atZone(ZoneOffset.systemDefault()).withNano(0));
 			return true;
 		} catch (DuplicateKeyException ignore) {
-			return checkJobLock(context);
+			return false;
 		}
 	}
 
