@@ -47,6 +47,9 @@ public abstract class AbstractJob extends QuartzJobBean {
 		}
 	}
 
+	/**
+	 * TODO need to use select for update to make sure multiple jobs don't try to run this
+	 */
 	private boolean checkJobLock(JobExecutionContext context) {
 		ZonedDateTime scheduled = ZonedDateTime.ofInstant(context.getScheduledFireTime().toInstant(),
 		                                                  ZoneOffset.systemDefault()).withNano(0);
